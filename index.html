@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Typing Test Game</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h1>Typing Test</h1>
+  <div id="levelInfo">Level 1: Easy</div>
+  <div id="prompt"></div>
+  <textarea id="inputBox" placeholder="Start typing here..." autofocus></textarea>
+  <div id="status">
+    <span id="timer">Time: 0s</span>
+    <span id="accuracy">Accuracy: 100%</span>
+  </div>
+  <button onclick="nextLevel()">Next Level</button>
+
+  <script src="script.js"></script>
+</body>
+</html>
