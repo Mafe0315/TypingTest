@@ -1,19 +1,37 @@
 const prompts = [
-  ["apple", "dog", "blue", "house", "tree"], // Level 1
-  ["The quick, brown fox jumps over the lazy dog.", "Typing is fun!"], // Level 2
-  ["if (x != y) { console.log('Mismatch!'); }", "Peter Piper picked a peck of pickled peppers."] // Level 3
+  [
+    "Time flies fast.",
+    "Typing is fun and easy.",
+    "Practice makes perfect."
+  ],
+  [
+    "Success comes to those who work hard.",
+    "A journey of a thousand miles begins with a step.",
+    "Stay focused and never give up."
+  ],
+  [
+    "The curious developer debugged diligently despite deadline disasters.",
+    "Creativity is intelligence having fun under pressure.",
+    "Fast fingers find fewer flaws from focused feedback."
+  ]
 ];
 
 let level = 0;
 let timer = 0;
 let timerInterval;
 let startTime;
+let totalTime = 0;
 let currentPrompt = "";
 let inputBox = document.getElementById("inputBox");
-let promptBox = document.getElementById("prompt");
+let promptDisplay = document.getElementById("promptDisplay");
 let timerDisplay = document.getElementById("timer");
 let accuracyDisplay = document.getElementById("accuracy");
 let levelInfo = document.getElementById("levelInfo");
+
+function getRandomPrompt() {
+  const list = prompts[level];
+  return list[Math.floor(Math.random() * list.length)];
+}
 
 function startLevel() {
   clearInterval(timerInterval);
@@ -21,14 +39,10 @@ function startLevel() {
   inputBox.disabled = false;
 
   currentPrompt = getRandomPrompt();
-  promptBox.textContent = currentPrompt;
+  updatePromptDisplay("");
   startTime = Date.now();
+  timer = 0;
   timerInterval = setInterval(updateTimer, 1000);
-}
-
-function getRandomPrompt() {
-  const currentLevelPrompts = prompts[level];
-  return currentLevelPrompts[Math.floor(Math.random() * currentLevelPrompts.length)];
 }
 
 function updateTimer() {
@@ -37,8 +51,23 @@ function updateTimer() {
   timerDisplay.textContent = `Time: ${timer}s`;
 }
 
-function updateAccuracy() {
-  const typed = inputBox.value;
+function updatePromptDisplay(typed) {
+  let html = "";
+
+  for (let i = 0; i < currentPrompt.length; i++) {
+    if (i < typed.length) {
+      html += currentPrompt[i] === typed[i]
+        ? `<span class="correct">${currentPrompt[i]}</span>`
+        : `<span class="incorrect">${currentPrompt[i]}</span>`;
+    } else {
+      html += currentPrompt[i];
+    }
+  }
+
+  promptDisplay.innerHTML = html;
+}
+
+function updateAccuracy(typed) {
   let correct = 0;
   for (let i = 0; i < typed.length; i++) {
     if (typed[i] === currentPrompt[i]) correct++;
@@ -48,12 +77,32 @@ function updateAccuracy() {
 }
 
 inputBox.addEventListener("input", () => {
-  updateAccuracy();
+  const typed = inputBox.value;
+  updatePromptDisplay(typed);
+  updateAccuracy(typed);
 
-  if (inputBox.value === currentPrompt) {
+  // Prevent typing if mistake is made
+  for (let i = 0; i < typed.length; i++) {
+    if (typed[i] !== currentPrompt[i]) {
+      return;
+    }
+  }
+
+  // Check completion
+  if (typed === currentPrompt) {
     clearInterval(timerInterval);
+    totalTime += timer;
     inputBox.disabled = true;
-    alert(`Well done! You completed Level ${level + 1} in ${timer}s.`);
+
+    confetti(); // 🎉 Celebrate!
+
+    if (level === prompts.length - 1) {
+      setTimeout(() => {
+        alert(`🎉 Congrats! You've finished all levels!\nTotal time: ${totalTime}s`);
+      }, 100);
+    } else {
+      alert(`✅ Great! Level ${level + 1} complete in ${timer}s.`);
+    }
   }
 });
 
@@ -63,9 +112,13 @@ function nextLevel() {
     levelInfo.textContent = `Level ${level + 1}: ${["Easy", "Medium", "Hard"][level]}`;
     startLevel();
   } else {
-    alert("You’ve completed all levels!");
+    alert("You've already finished all levels!");
   }
 }
 
-// Start the game
-window.onload = startLevel;
+window.onload = () => {
+  level = 0;
+  totalTime = 0;
+  levelInfo.textContent = "Level 1: Easy";
+  startLevel();
+};
