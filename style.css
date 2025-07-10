@@ -1,40 +1,19 @@
-body {
-  font-family: Arial, sans-serif;
-  background: #f2f2f2;
-  text-align: center;
-  padding: 20px;
-}
-
-h1 {
-  color: #333;
-}
-
-#prompt {
+#promptDisplay {
+  font-size: 20px;
   background: #fff;
-  border: 1px solid #ccc;
-  padding: 15px;
-  margin: 10px auto;
-  width: 80%;
-  font-size: 18px;
-}
-
-#inputBox {
-  width: 80%;
-  height: 100px;
-  font-size: 16px;
   padding: 10px;
+  margin: 20px auto;
+  width: 80%;
+  border: 1px solid #ccc;
+  white-space: pre-wrap;
+  text-align: left;
 }
 
-#status {
-  margin-top: 10px;
-  font-size: 16px;
-  display: flex;
-  justify-content: center;
-  gap: 30px;
+.correct {
+  color: green;
+  font-weight: bold;
 }
 
-button {
-  margin-top: 20px;
-  padding: 10px 20px;
-  font-size: 16px;
+.incorrect {
+  color: red;
 }
