@@ -22,6 +22,7 @@ let totalTime = 0;
 let timerInterval;
 let startTime;
 let currentPrompt = "";
+let timerStarted = false;
 
 const inputBox = document.getElementById("inputBox");
 const promptDisplay = document.getElementById("promptDisplay");
@@ -42,12 +43,12 @@ function startLevel() {
   clearInterval(timerInterval);
   inputBox.value = "";
   inputBox.disabled = false;
+  timerStarted = false;
 
   currentPrompt = getRandomPrompt();
   updatePromptDisplay("");
-  startTime = Date.now();
-  timer = 0;
-  timerInterval = setInterval(updateTimer, 1000);
+  timerDisplay.textContent = `Time: 0s`;
+  accuracyDisplay.textContent = `Accuracy: 100%`;
 }
 
 function updateTimer() {
@@ -91,44 +92,42 @@ function confettiBlast() {
 
 inputBox.addEventListener("input", () => {
   const typed = inputBox.value;
+
+  // Start timer on first input
+  if (!timerStarted && typed.length > 0) {
+    startTime = Date.now();
+    timerInterval = setInterval(updateTimer, 1000);
+    timerStarted = true;
+  }
+
   updatePromptDisplay(typed);
   updateAccuracy(typed);
 
-  // Block further typing on wrong input
+  // Block typing if any character is wrong
   for (let i = 0; i < typed.length; i++) {
     if (typed[i] !== currentPrompt[i]) return;
   }
 
-  // Check completion
+  // Check if completed
   if (typed === currentPrompt) {
     clearInterval(timerInterval);
     inputBox.disabled = true;
     totalTime += timer;
-
-    // Confetti + sound
     confettiBlast();
     successSound.play();
 
-    if (level === prompts.length - 1) {
-      setTimeout(() => {
-        alert(`🎉 Congrats! You finished all levels!\nTotal time: ${totalTime}s`);
+    setTimeout(() => {
+      if (level === prompts.length - 1) {
+        alert(`🎉 Congrats! You completed all levels!\nTotal Time: ${totalTime}s`);
         tryAgainBtn.style.display = "inline-block";
-      }, 100);
-    } else {
-      alert(`✅ Great job! You finished Level ${level + 1} in ${timer}s`);
-    }
+      } else {
+        level++;
+        levelInfo.textContent = `Level ${level + 1}: ${["Easy", "Medium", "Hard"][level]}`;
+        startLevel();
+      }
+    }, 1000);
   }
 });
-
-function nextLevel() {
-  if (level < prompts.length - 1) {
-    level++;
-    levelInfo.textContent = `Level ${level + 1}: ${["Easy", "Medium", "Hard"][level]}`;
-    startLevel();
-  } else {
-    alert("You've already finished all levels.");
-  }
-}
 
 function restartGame() {
   level = 0;
@@ -138,5 +137,4 @@ function restartGame() {
   startLevel();
 }
 
-// Start the first level on load
 window.onload = startLevel;
